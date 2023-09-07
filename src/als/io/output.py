@@ -174,8 +174,6 @@ class ImageSaver(QueueConsumer):
         """
         # here we are sure that image data type is unsigned 16 bits. We need to downscale to 8 bits
         image.data = (image.data / (((2 ** 16) - 1) / ((2 ** 8) - 1))).astype('uint8')
-        cv2_color_conversion_flag = cv2.COLOR_RGB2BGR if image.is_color() else cv2.COLOR_GRAY2BGR
-        image_data_rgb = cv2.cvtColor(image.data, cv2_color_conversion_flag)
 
         # Prepare EXIF
         user_comment = {
@@ -184,7 +182,7 @@ class ImageSaver(QueueConsumer):
         }
 
         # Prepare output image
-        pilimage = PILImage.fromarray(image_data_rgb)
+        pilimage = PILImage.fromarray(image.data)
         exif = pilimage.getexif()
         exif[ExifTags.Base.ImageDescription] = json.dumps(user_comment)
         exif[ExifTags.Base.Software] = 'Astro Live Stacker'

@@ -10,7 +10,7 @@ from pathlib import Path
 import cv2
 import exifread
 from PyQt5.QtCore import pyqtSignal, QObject, QT_TRANSLATE_NOOP
-from astropy.io import fits
+import fitsio
 from rawpy import imread
 from rawpy._rawpy import LibRawNonFatalError, LibRawFatalError
 from watchdog.events import FileSystemEventHandler
@@ -205,10 +205,7 @@ def _read_fit_image(path: Path):
     :rtype: Image or None
     """
     try:
-        with fits.open(str(path.resolve())) as fit:
-            # pylint: disable=E1101
-            data = fit[0].data
-            header = fit[0].header
+        data,header = fitsio.read(str(path.resolve()), header=True)
 
         image = Image(data)
 
